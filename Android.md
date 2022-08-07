@@ -370,7 +370,6 @@ Android中内置了多个系统广播：只要涉及到手机的基本操作（�
   关闭系统时	Intent.ACTION_SHUTDOWN  
   重启设备	Intent.ACTION_REBOOT  
 
-
 - 有序广播（Ordered Broadcast）  
   规则：   
   按照Priority属性值从大-小排序；  
