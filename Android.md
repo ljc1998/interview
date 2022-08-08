@@ -439,4 +439,56 @@ value值只能是：float、int、boolean、string、stringset.
 
 
 # 内容提供器
+链接：https://juejin.cn/post/6964964726040494117
+进程间 进行数据交互 & 共享，即跨进程通信。
+
+ContentProvider 是一个抽象类，如果我们需要开发自己的内容提供者我们就需要继承这个类并复写其方法，需要实现的主要方法如下：
+```java
+public boolean onCreate() ：在创建 ContentProvider 时使用
+public Cursor query() ：用于查询指定 uri 的数据返回一个 Cursor
+public Uri insert()： 用于向指定uri的 ContentProvider 中添加数据
+public int delete() ：用于删除指定 uri 的数据
+public int update() ：用户更新指定 uri 的数据
+public String getType() ：用于返回指定的 Uri 中的数据 MIME 类型
+```
+
+- uri
+  其它应用可以通过 ContentResolver 来访问 ContentProvider 提供的数据，而 ContentResolver 通过 uri 来定位自己要访问的数据，所以我们要先了解 uri。URI（Universal Resource Identifier）统一资源定位符，如果您使用过安卓的隐式启动就会发现，在隐式启动的过程中我们也是通过 uri 来定位我们需要打开的 Activity 并且可以在 uri 中传递参数。
+  ```xml
+  // 规则
+  [scheme:][//host:port][path][?query]
+  // 示例
+  content://com.wang.provider.myprovider/tablename/id：
+  ```
+  标准前缀（scheme）——content://，用来说明一个Content Provider控制这些数据；
+  URI 的标识 (host:port)—— com.wang.provider.myprovider，用于唯一标识这个 ContentProvider，外部调用者可以根据这个标识来找到它。对于第三方应用程序，为了保证 URI 标识的唯一性，它必须是一个完整的、小写的类名。这个标识在元素的authorities属性中说明，一般是定义该 ContentProvider 的包.类的名称；
+  路径(path)——tablename，通俗的讲就是你要操作的数据库中表的名字，或者你也可以自己定义，记得在使用的时候保持一致就可以了；
+  记录ID(query)——id，如果URI中包含表示需要获取的记录的 ID，则返回该id对应的数据，如果没有ID，就表示返回全部；
+- mime
+  MIME 是指定某个扩展名的文件用一种应用程序来打开，就像你用浏览器查看 PDF 格式的文件，浏览器会选择合适的应用来打开一样。Android 中的工作方式跟 HTTP 类似，ContentProvider 会根据 URI 来返回 MIME 类型，ContentProvider 会返回一个包含两部分的字符串。
+  每个内容类型的 Android MIME 类型有两种形式：多条记录（集合）和单条记录。
+
+  集合记录（dir）：vnd.android.cursor.dir/自定义 
+  单条记录(item)：vnd.android.cursor.item/自定义 
+- 监听数据变化
+  如果ContentProvider的访问者需要知道数据发生的变化，可以在ContentProvider发生数据变化时调用getContentResolver().notifyChange(uri, null)来通知注册在此URI上的访问者。
+  而访问者必须使用 ContentObserver 对数据（数据采用 uri 描述）进行监听，当监听到数据变化通知时，系统就会调用 ContentObserver 的 onChange() 方法。
+
+链接：https://blog.csdn.net/carson_ho/article/details/76101093
+
+# Binder
+
+## 基本概念
+Binder机制是​ Android系统中进程间通讯（IPC）的一种方式，连接 两个进程，实现了mmap()系统调用，主要负责 创建数据接收的缓存空间 & 管理数据接收缓存。Android中ContentProvider、Intent、aidl都是基于Binder。
+
+模型：
+![1](img/binder%E6%A8%A1%E5%9E%8B.png)
+各组成部分的说明
+![1](img/29.png)
+
+## 具体实现原理
+![1](img/Binder%E5%8E%9F%E7%90%86.png)
+注：Client进程、Server进程 & Service Manager 进程之间的交互 都必须通过Binder驱动（使用 open 和 ioctl文件操作函数），而非直接交互.
+
+链接：https://blog.csdn.net/carson_ho/article/details/73560642
 
