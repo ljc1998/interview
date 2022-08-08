@@ -166,7 +166,7 @@ volatile关键字为域变量的访问提供了一种免锁机制，使用volati
 5. 原子变量
 在java的util.concurrent.atomic包中提供了创建了原子类型变量的工具类，使用该类可以简化线程同步。例如AtomicInteger 表可以用原子方式更新int的值，可用在应用程序中（如以原子方式增加的计数器），但不能用于替换Integer。可扩展Number，允许那些处理机遇数字类的工具和实用工具进行统一访问。
 
-## 进程之间的通信方式
+## 线程之间的通信方式
 + wait()/notify()
     Object类中相关的方法有notify方法和wait方法。因为wait和notify方法定义在Object类中，因此会被所有的类所继承。这些方法都是final的，即它们都是不能被重写的，不能通过子类覆写去改变它们的行为。
 
@@ -231,6 +231,13 @@ synchronized是和if、else、for、while一样的关键字，ReentrantLock是�
 1、ReentrantLock可以对获取锁的等待时间进行设置，这样就避免了死锁
 2、ReentrantLock可以获取各种锁的信息
 3、ReentrantLock可以灵活地实现多路通知
+
+## ThreadLocal
+ThreadLocal，即线程本地变量。如果你创建了一个ThreadLocal变量，那么访问这个变量的每个线程都会有这个变量的一个本地拷贝，多个线程操作这个变量的时候，实际是操作自己本地内存里面的变量，从而起到线程隔离的作用，避免了线程安全问题。
+
+Thread类有一个类型为ThreadLocal.ThreadLocalMap的实例变量threadLocals，即每个线程都有一个属于自己的ThreadLocalMap。
+ThreadLocalMap内部维护着Entry数组，每个Entry代表一个完整的对象，key是ThreadLocal本身，value是ThreadLocal的泛型值。
+每个线程在往ThreadLocal里设置值的时候，都是往自己的ThreadLocalMap里存，读也是以某个ThreadLocal作为引用，在自己的map里找对应的key，从而实现了线程隔离。
 
 ## 线程安全
 执行控制的目的是控制代码执行（顺序）及是否可以并发执行。内存可见控制的是线程执行结果在内存中对其它线程的可见性。根据Java内存模型的实现，线程在具体执行时，会先拷贝主存数据到线程本地（CPU缓存），操作完成后再把结果从线程本地刷到主存。
@@ -392,3 +399,7 @@ Java 的 NIO，用非阻塞的 IO 方式。可以用一个线程，处理多个�
 双亲委派机制的优点：
 + Java类随着它的类加载器一起具备了一种带有优先级的层次关系，通过这种层级关可以避免类的重复加载，当父亲已经加载了该类时，就没有必要子ClassLoader再加载一次。
 + 其次是考虑到安全因素，java核心api中定义类型不会被随意替换，假设通过网络传递一个名为java.lang.Integer的类，通过双亲委托模式传递到启动类加载器，而启动类加载器在核心Java API发现这个名字的类，发现该类已被加载，并不会重新加载网络传递的过来的java.lang.Integer，而直接返回已加载过的Integer.class，这样便可以防止核心API库被随意篡改。
+
+那些打破了双亲委派的案例：
+1、Tomcat可以加载自己目录下的class文件，并不会传递给父类的加载器。
+2、Java的SPI，发起者是BootstrapClassLoader，BootstrapClassLoader已经是最上层的了。它直接获取了AppClassLoader进行驱动加载，和双亲委派是相反的
