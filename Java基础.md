@@ -216,6 +216,7 @@ volatile标记的变量不会被编译器优化；synchronized标记的变量可
 - synchronized 修饰的方法并没有 monitorenter 指令和 monitorexit 指令，取得代之的确实是ACC_SYNCHRONIZED 标识，该标识指明了该方法是一个同步方法，JVM 通过该 ACC_SYNCHRONIZED访问标志来辨别一个方法是否声明为同步方法，从而执行相应的同步调用。
 
 ## ReentranLock
+链接：https://juejin.cn/post/6844903805683761165
 ReentrantLock是Java中常用的锁，属于乐观锁类型，多线程并发情况下。能保证共享数据安全性，线程间有序性。ReentrantLock通过原子操作和阻塞实现锁原理，一般使用lock获取锁，unlock释放锁.
 
 原理：
