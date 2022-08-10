@@ -1,5 +1,5 @@
 # 四大组件
-## Activity：  
+- Activity：  
    Activity 是与用户交互的入口点。它表示拥有界面的单个屏幕。例如，电子邮件应用可能有一个显示新电子邮件列表的 Activity、一个用于撰写电子邮件的 Activity 以及一个用于阅读电子邮件的 Activity。尽管这些 Activity 通过协作在电子邮件应用中形成一种紧密结合的用户体验，但每个 Activity 都独立于其他 Activity 而存在。因此，其他应用可以启动其中任何一个 Activity（如果电子邮件应用允许）。例如，相机应用可以启动电子邮件应用内用于撰写新电子邮件的 Activity，以便用户共享图片。Activity 有助于完成系统和应用程序之间的以下重要交互：
    + 追踪用户当前关心的内容（屏幕上显示的内容），以确保系统继续运行托管 Activity 的进程。
    + 了解先前使用的进程包含用户可能返回的内容（已停止的 Activity），从而更优先保留这些进程。
@@ -7,25 +7,25 @@
    + 提供一种途径，让应用实现彼此之间的用户流，并让系统协调这些用户流。（此处最经典的示例是共享。）  
     您需将 Activity 作为 Activity 类的子类来实现。
 
-## service：  
+- service：  
    服务是一个通用入口点，用于因各种原因使应用在后台保持运行状态。它是一种在后台运行的组件，用于执行长时间运行的操作或为远程进程执行作业。服务不提供界面。例如，当用户使用其他应用时，服务可能会在后台播放音乐或通过网络获取数据，但这不会阻断用户与 Activity 的交互。诸如 Activity 等其他组件可以启动服务，使该服务运行或绑定到该服务，以便与其进行交互。事实上，有两种截然不同的语义服务可以告知系统如何管理应用：已启动服务会告知系统使其运行至工作完毕。此类工作可以是在后台同步一些数据，或者在用户离开应用后继续播放音乐。在后台同步数据或播放音乐也代表了两种不同类型的已启动服务，而这些服务可以修改系统处理它们的方式：
    + 音乐播放是用户可直接感知的服务，因此，应用会向用户发送通知，表明其希望成为前台，从而告诉系统此消息；在此情况下，系统明白它应尽全力维持该服务进程运行，因为进程消失会令用户感到不快。
    + 通常，用户不会意识到常规后台服务正处于运行状态，因此系统可以更自由地管理其进程。如果系统需要使用 RAM 来处理用户更迫切关注的内容，则其可能允许终止服务（然后在稍后的某个时刻重启服务）。  
        绑定服务之所以能运行，原因是某些其他应用（或系统）已表示希望使用该服务。从根本上讲，这是为另一个进程提供 API 的服务。因此，系统会知晓这些进程之间存在依赖关系，所以如果进程 A 绑定到进程 B 中的服务，系统便知道自己需使进程 B（及其服务）为进程 A 保持运行状态。此外，如果进程 A 是用户关心的内容，系统随即也知道将进程 B 视为用户关心的内容。由于存在灵活性（无论好坏），服务已成为非常有用的构建块，并且可实现各种高级系统概念。动态壁纸、通知侦听器、屏幕保护程序、输入方法、无障碍功能服务以及众多其他核心系统功能均可构建为在其运行时由应用实现、系统绑定的服务。
        您需将服务作为 Service 的子类来实现。
 
-## Content Provider：    
+- Content Provider：    
    内容提供程序管理一组共享的应用数据，您可以将这些数据存储在文件系统、SQLite 数据库、网络中或者您的应用可访问的任何其他持久化存储位置。其他应用可通过内容提供程序查询或修改数据（如果内容提供程序允许）。例如，Android 系统可提供管理用户联系人信息的内容提供程序。因此，任何拥有适当权限的应用均可查询内容提供程序（如 ContactsContract.Data），以读取和写入特定人员的相关信息。我们很容易将内容提供程序看作数据库上的抽象，因为其内置的大量 API 和支持时常适用于这一情况。但从系统设计的角度看，二者的核心目的不同。对系统而言，内容提供程序是应用的入口点，用于发布由 URI 架构识别的已命名数据项。因此，应用可以决定如何将其包含的数据映射到 URI 命名空间，进而将这些 URI 分发给其他实体。反之，这些实体也可使用分发的 URI 来访问数据。在管理应用的过程中，系统可以执行以下特殊操作：
    + 分配 URI 无需应用保持运行状态，因此 URI 可在其所属的应用退出后继续保留。当系统必须从相应的 URI 检索应用数据时，系统只需确保所属应用仍处于运行状态。
    + 这些 URI 还会提供重要的细粒度安全模型。例如，应用可将其所拥有图像的 URI 放到剪贴板上，但将其内容提供程序锁定，以便其他应用程序无法随意访问它。当第二个应用尝试访问剪贴板上的 URI 时，系统可允许该应用通过临时的 URI 授权来访问数据，这样便只能访问 URI 后面的数据，而非第二个应用中的其他任何内容。  
        内容提供程序也适用于读取和写入您的应用不共享的私有数据。  
        内容提供程序作为 ContentProvider 的子类实现，并且其必须实现一组标准 API，以便其他应用能够执行事务。
 
-## BroadCast Receiver：  
+- BroadCast Receiver：  
    借助广播接收器组件，系统能够在常规用户流之外向应用传递事件，从而允许应用响应系统范围内的广播通知。由于广播接收器是另一个明确定义的应用入口，因此系统甚至可以向当前未运行的应用传递广播。例如，应用可通过调度提醒来发布通知，以告知用户即将发生的事件。而且，通过将该提醒传递给应用的广播接收器，应用在提醒响起之前即无需继续运行。许多广播均由系统发起，例如，通知屏幕已关闭、电池电量不足或已拍摄照片的广播。应用也可发起广播，例如，通知其他应用某些数据已下载至设备，并且可供其使用。尽管广播接收器不会显示界面，但其可以创建状态栏通知，在发生广播事件时提醒用户。但广播接收器更常见的用途只是作为通向其他组件的通道，旨在执行极少量的工作。例如，它可能会根据带 JobScheduler 的事件调度 JobService 来执行某项工作.  
     广播接收器作为 BroadcastReceiver 的子类实现，并且每条广播都作为 Intent 对象进行传递。  
 
-# 五种布局
+- 五种布局
 一、FrameLayout：所有东西依次都放在左上角，会重叠，这个布局比较简单，也只能放一点比较简单的东西。
 
 二、LinearLayout：线性布局，每一个LinearLayout里面又可分为垂直布局（android:orientation="vertical"）和水平布局（android:orientation="horizontal" ）。当垂直布局时，每一行就只有一个元素，多个元素依次垂直往下；水平布局时，只有一行，每一个元素依次向右排列。
@@ -152,7 +152,79 @@
 
   例如，假设一个Task由四个Activity组成：A,B,C,D。如果D调用startActivity()来启动Activity B，那么，B会移动到历史stack的顶端，现在的次序变成A,C,D,B。如果FLAG_ACTIVITY_CLEAR_TOP标志也设置的话，那么这个标志将被忽略。
 
+# Activity的启动过程
 
+![1](img/Activity%E5%90%AF%E5%8A%A8.png)
+
+- ⾸先还是得当前系统中有没有拥有这个 Application 的进程。如果没有，则需要处理APP 的启动过程。在经过创建进程、绑定 Application 步骤后，才真正开始启动Activity 的⽅法。startActivity() 方法最终还是调⽤startActivityForResult()。
+- 在 startActivityForResult() 中，真正去打开 Activity 的实现是在Instrumentation 的 execStartActivivity() ⽅法中。
+- 在 execStartActivity() 中采⽤ checkStartActivityResult() 检查在 manifest 中是否已经注册，如果没 有注册则抛出异常。否则把打开 Activity 的任务交给ActivityThread 的内部类 ApplicationThread， 该类实现了IApplicationThread接⼝。这个类完全搞定了onCreate()、onStart() 等 Activity 的⽣命 周期回调⽅法。
+- 在 ApplicationThread 类中，有⼀个⽅法叫 scheduleLaunchActivity()，它可以构造⼀个 Activity 记 录，然后发送⼀个消息给事先定义好的 Handler。 这个 Handler负责根据 LAUNCH_ACTIVITY 的类型来做不同的 Activity 启动⽅式。其中有⼀个要的 ⽅法 handleLaunchActivity() 。
+- 在 handleLaunchActivity() 中，会把启动 Activity 交给 performLaunchActivity()⽅法。 在 performLaunchActivity() ⽅法中，⾸先从 Intent 中解析出⽬标 Activity的启动参数，然后⽤ ClassLoader 将⽬标 Activity 的类通过类名加载出来并⽤newInstance() 来实例化⼀个对象。 创建完毕后， 开始调⽤ Activity 的 onCreate()⽅法，⾄此，Activity 被成功启动。
+
+
+具体方法调用：
+第一阶段： Launcher通知AMS要启动新的Activity（在Launcher所在的进程执行）
+Launcher.startActivitySafely //首先Launcher发起启动Activity的请求
+Activity.startActivity
+Activity.startActivityForResult
+Instrumentation.execStartActivity //交由Instrumentation代为发起请求
+ActivityManager.getService().startActivity //通过IActivityManagerSingleton.get()得到一个AMP代理对象
+ActivityManagerProxy.startActivity //通过AMP代理通知AMS启动activity
+
+第二阶段：AMS先校验一下Activity的正确性，如果正确的话，会暂存一下Activity的信息。然后，AMS会通知Launcher程序pause Activity（在AMS所在进程执行）
+ActivityManagerService.startActivity
+ActivityManagerService.startActivityAsUser
+ActivityStackSupervisor.startActivityMayWait
+ActivityStackSupervisor.startActivityLocked ：检查有没有在AndroidManifest中注册
+ActivityStackSupervisor.startActivityUncheckedLocked
+ActivityStack.startActivityLocked ：判断是否需要创建一个新的任务来启动Activity。
+ActivityStack.resumeTopActivityLocked ：获取栈顶的activity，并通知Launcher应该pause掉这个Activity以便启动新的activity。
+ActivityStack.startPausingLocked
+ApplicationThreadProxy.schedulePauseActivity
+
+第三阶段： pause Launcher的Activity，并通知AMS已经paused（在Launcher所在进程执行）
+ApplicationThread.schedulePauseActivity
+ActivityThread.queueOrSendMessage
+H.handleMessage
+ActivityThread.handlePauseActivity
+ActivityManagerProxy.activityPaused
+
+第四阶段：检查activity所在进程是否存在，如果存在，就直接通知这个进程，在该进程中启动Activity；不存在的话，会调用Process.start创建一个新进程（执行在AMS进程）
+ActivityManagerService.activityPaused
+ActivityStack.activityPaused
+ActivityStack.completePauseLocked
+ActivityStack.resumeTopActivityLocked
+ActivityStack.startSpecificActivityLocked
+ActivityManagerService.startProcessLocked
+Process.start //在这里创建了新进程，新的进程会导入ActivityThread类，并执行它的main函数
+第五阶段： 创建ActivityThread实例，执行一些初始化操作，并绑定Application。如果Application不存在，会调用LoadedApk.makeApplication创建一个新的Application对象。之后进入Loop循环。（执行在新创建的app进程）
+ActivityThread.main
+ActivityThread.attach(false) //声明不是系统进程
+ActivityManagerProxy.attachApplication
+
+第六阶段：处理新的应用进程发出的创建进程完成的通信请求，并通知新应用程序进程启动目标Activity组件（执行在AMS进程）
+ActivityManagerService.attachApplication //AMS绑定本地ApplicationThread对象，后续通过ApplicationThreadProxy来通信。
+ActivityManagerService.attachApplicationLocked
+ActivityStack.realStartActivityLocked //真正要启动Activity了！
+ApplicationThreadProxy.scheduleLaunchActivity //AMS通过ATP通知app进程启动Activity
+
+第七阶段： 加载MainActivity类，调用onCreate声明周期方法（执行在新启动的app进程）
+ApplicationThread.scheduleLaunchActivity //ApplicationThread发消息给AT
+ActivityThread.queueOrSendMessage
+H.handleMessage //AT的Handler来处理接收到的LAUNCH_ACTIVITY的消息
+ActivityThread.handleLaunchActivity
+ActivityThread.performLaunchActivity
+Instrumentation.newActivity //调用Instrumentation类来新建一个Activity对象
+Instrumentation.callActivityOnCreate
+MainActivity.onCreate
+ActivityThread.handleResumeActivity
+AMP.activityResumed
+AMS.activityResumed(AMS进程)
+————————————————
+原文链接：https://blog.csdn.net/u012267215/article/details/91406211
+
+链接：https://blog.csdn.net/qq_30379689/article/details/79611217
 # Activity的生命周期
 ![1](img/17.png)
 
@@ -179,6 +251,28 @@
 设置Activity的android:configChanges="orientation"时，切屏还是会重新调用各个生命周期，切横、竖屏时只会执行一次；  
 设置Activity的android:configChanges="orientation|keyboardHidden"时，切屏不会重新调用各个生命周期，只会执行onConfigurationChanged方法.
 
+# onSaveInstanceState方法什么时候被调用？
+在 Activity 被销毁之前被调用来保存每个实例的状态，这样就可以保证该状态能够从 onCreate(Bundle) 或者onRestoreInstanceState(Bundle)恢复过来。 本方法在 Activity 可能被销毁前调用，这样当该 Activity 在将来某个时刻重新回来时可以恢复其之前的状态。
+例如，如果 Activity B 启用后位于 Activity A 的前端，在某个时刻 Activity A 因为系统回收资源的原因要被销毁，Activity A 有机会通过 onSaveInstanceState() 来保存其用户界面状态，使得将来用户返回到 Activity A 的时候能够通过 onCreate(Bundle) 或者onRestoreInstanceState(Bundle) 来恢复其界面状态。
+
+此方法和onPause、onStop方法的区别：
+onPause() 在 Activtiy 被放置到后台或者自行销毁时总会被调用，onStop() 在 Activity 被销毁时被调用。一个会调用 onPause() 和 onStop() 但不会触发 onSaveInstanceState() 的例子是当用户从 Activity B 返回到 Activity A 时：没有必要调用 B 的 onSaveInstanceState(Bundle)方法，因为此时的 B 实例永远不会被恢复，因此系统会避免调用它。一个调用 onPause() 但不调用 onSaveInstanceState(Bundle) 方法的例子是当 Activity B 启动后处在 Activity A 的前端：如果在B的整个生命周期里 A 的用户界面状态都没有被破坏的话，系统是不会调用 Activity A 的onSaveInstanceState(Bundle)方法。默认的实现负责了大部分 UI 实例状态的保存，采用的方式是调用 UI 层上每个拥有 id 的 view 的 onSaveInstanceState()方法 ，并且保存当前获得焦点的 view 的 id （所有保存的状态信息都会在默认的 onRestoreInstanceState(Bundle) 实现中恢复)。如果你覆写这个方法来保存额外的没有被各个view保存的信息，你可能想要在默认实现过程中调用或者自己保存每个视图的所有状态。如果被调用，这个方法会在 onStop() 前被触发，但系统并不保证是否在 onPause() 之前或者之后触发。
+
+# view、window、activity
+- Activity工作过程是什么样的？
+以Activity启动过程为例，Activity启动时是通过Binder向AMS(ActivityManagerService)发请求，通过PIC启动Activity的。
+
+- Window是什么？它的职能是什么？
+Activity要管理View需要通过Window来间接管理的。Window通过addView()、removeView()、updateViewLayout()这三个方法来管理View的。
+
+- View跟Window有什么联系？
+View需要通过Window来展示在Activity上。
+
+- Activity、View、Window三者如何关联？
+Activity包含了一个PhoneWindow，而PhoneWindow就是继承于Window的，Activity通过setContentView将View设置到了PhoneWindow上，而View通过WindowManager的addView()、removeView()、updateViewLayout()对View进行管理。Window的添加过程以及Activity的启动流程都是一次IPC的过程。Activity的启动需要通过AMS完成；Window的添加过程需要通过WindowSession完成。
+
+链接：https://cloud.tencent.com/developer/article/1179345
+
 # Fragment
 ![1](img/18.png)  
 - onAttach() ：
@@ -203,6 +297,18 @@
 销毁 Fragment 时被回调。
 - onDetach()：
 与onAttach相对应，当Fragment与Activity关联被取消时调用。
+
+add与replace的区别：
+add不会重新初始化fragment，replace每次都会。所以如果在fragment生命周期内获
+取获取数据,使用replace会重复获取；
+添加相同的fragment时，replace不会有任何变化，add会报IllegalStateException异
+常；
+replace先remove掉相同id的所有fragment，然后在add当前的这个fragment，而add
+是覆盖前一个fragment。所以如果使用add一般会伴随hide()和show()，避免布局重
+叠；
+使用add，如果应用放在后台，或以其他方式被系统销毁，再打开时，hide()中引用的
+fragment会销毁，所以依然会出现布局重叠bug，可以使用replace或使用add时，添
+加一个tag参数
 
 **生命周期调用**  
 1）创建Fragment
@@ -322,11 +428,11 @@ RecyclerView 会回收这些单个的元素。当列表项滚动出屏幕时，R
      super.onPause();
       //销毁在onResume()方法中的广播
      unregisterReceiver(mBroadcastReceiver);
-     }
 }
 ```
 注意：  
 对于动态广播，有注册就必然得有注销，否则会导致内存泄露，最好在Activity 的 onResume()注册、onPause()注销。
+
 
 ## 广播的发送
 - 普通广播（Normal Broadcast）
@@ -407,16 +513,16 @@ intent.setAction(BROADCAST_ACTION);
 localBroadcastManager.sendBroadcast(intent);
 
 ```
-
+广播的底层实现原理：https://www.jianshu.com/p/02085150339c
 # 数据持久化
-## 文件存储
++ 文件存储
 该存储方式是一种较常见的方法，在Android中读取/写入文件的方法，与Java中实现I/O程序是完全一样的，提供了openFileInput()方法和openFileOutput()方法来读取设备上的文件。
 
 可以存储大数据，如文本、图片、音频；通过java 的I/O流读取磁盘上的文件。存储在data/data/<包名>/files/目录下。
 
 ![1](img/24.png)
 
-## SharedPreferences
++ SharedPreferences
 它是Android提供的，用来以最简单的方式对数据进行永久保存的方法
 
 用来存储一些简单的配置信息的一种机制，采用了XML格式将数据存储到设备中
@@ -430,7 +536,7 @@ value值只能是：float、int、boolean、string、stringset.
 - 读数据
   ![1](img/27.png)
 
-## SQLite数据库
++ SQLite数据库
 是Android自带的一个轻量级的数据库，支持基本的SQL语法，利用很少的内存，就有很好的性能，一般使用它作为复杂数据的存储引擎，可以存储用户信息
 
 优点：占用资源少 运行效率高 安全可靠 可移植性强。
@@ -452,6 +558,14 @@ public int update() ：用户更新指定 uri 的数据
 public String getType() ：用于返回指定的 Uri 中的数据 MIME 类型
 ```
 
+- 说说ContentProvider、ContentResolver、ContentObserver 之间的关系？
+参考回答：
+ContentProvider：管理数据，提供数据的增删改查操作，数据源可以是数据库、文件、XML、网络等，ContentProvider为这些数据的访问提供了统一的接口，可以用来做进程间数据共享。
+ContentResolver：ContentResolver可以为不同URI操作不同的ContentProvider中的数据，外部进程可以通过ContentResolver与ContentProvider进行交互。
+ContentObserver：观察ContentProvider中的数据变化，并将变化通知给外界。
+
+- contentProvider实现原理：
+  https://juejin.cn/post/6844904062173839368#heading-0
 - uri
   其它应用可以通过 ContentResolver 来访问 ContentProvider 提供的数据，而 ContentResolver 通过 uri 来定位自己要访问的数据，所以我们要先了解 uri。URI（Universal Resource Identifier）统一资源定位符，如果您使用过安卓的隐式启动就会发现，在隐式启动的过程中我们也是通过 uri 来定位我们需要打开的 Activity 并且可以在 uri 中传递参数。
   ```xml
@@ -475,6 +589,10 @@ public String getType() ：用于返回指定的 Uri 中的数据 MIME 类型
   而访问者必须使用 ContentObserver 对数据（数据采用 uri 描述）进行监听，当监听到数据变化通知时，系统就会调用 ContentObserver 的 onChange() 方法。
 
 链接：https://blog.csdn.net/carson_ho/article/details/76101093
+
+
+# 服务
+
 
 # Binder
 
